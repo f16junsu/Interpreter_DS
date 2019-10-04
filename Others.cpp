@@ -1,12 +1,5 @@
 #include "Others.h"
 
-char tolow(char ch)
-{
-	if (ch >= 'A' && ch <= 'Z')
-		return ch - ('Z' - 'z');
-	return ch;
-}
-
 int read(Buffer & buf, HashTable & hashtable, MemoryTable & memorytable)
 {
 	int root = 0;

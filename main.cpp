@@ -1,7 +1,3 @@
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <iomanip>
 #include "Others.h"
 
 int main(void)

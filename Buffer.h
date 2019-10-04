@@ -1,6 +1,7 @@
 #pragma once
 #include <sstream>
 
+char tolow(char ch);
 class Buffer
 {
 private:

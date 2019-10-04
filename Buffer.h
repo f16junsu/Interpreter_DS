@@ -10,5 +10,6 @@ private:
 public:
 	std::string getNextToken(void);
 	void init(const std::string& input);
-	void pushBack();
+	std::string preprocessing(void);
+	void pushBack(void);
 };

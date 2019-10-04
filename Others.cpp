@@ -47,13 +47,15 @@ void run(HashTable & hashtable, MemoryTable & memorytable, Buffer & buf)
 		std::string input;
 		std::getline(std::cin, input);
 		buf.init(input);
-		memorytable.setNode_root(read(buf, hashtable, memorytable));
-		std::cout << "] " << "Free list's root = " << memorytable.getFree_list() << std::endl;
-		std::cout << "  " << "List's root = " << memorytable.getNode_root() << std::endl;
-		memorytable.printTable();
-		std::cout << std::endl;
-		hashtable.printTable();
-		memorytable.print();
-		memorytable.dealloc();
+		std::string temp = buf.preprocessing();
+		std::cout << temp << std::endl;
+		//memorytable.setNode_root(read(buf, hashtable, memorytable));
+		//std::cout << "] " << "Free list's root = " << memorytable.getFree_list() << std::endl;
+		//std::cout << "  " << "List's root = " << memorytable.getNode_root() << std::endl;
+		//memorytable.printTable();
+		//std::cout << std::endl;
+		//hashtable.printTable();
+		//memorytable.print();
+		//memorytable.dealloc();
 	}
 }

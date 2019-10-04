@@ -37,3 +37,37 @@ void Buffer::pushBack()
 	ss.str(ss.str().insert(ss.tellg(), "("));
 	ss.seekg(pos);
 }
+
+std::string Buffer::preprocessing(void)
+{
+	std::string newcommand = std::string();
+	std::string tok;
+	while ((tok = getNextToken()) != std::string())
+	{
+		if (tok == "define") // (define (square x) (* x x))
+		{
+			newcommand = newcommand + "define ";
+			tok = getNextToken();
+			if (tok == "(")
+			{
+				tok = getNextToken();
+				newcommand = newcommand + tok + " ( lambda ( " + preprocessing() + ") ";
+			}
+			else newcommand = newcommand + tok + " ";
+		}
+		else if (tok == "'") // '(a b c) -> (quote (a b c))
+		{
+			newcommand = newcommand + "( quote ";
+			int num_of_lft_paren = 0;
+			do {
+				tok = getNextToken();
+				newcommand = newcommand + tok + " ";
+				if (tok == "(") ++num_of_lft_paren;
+				else if (tok == ")") --num_of_lft_paren;
+			} while (num_of_lft_paren);
+			newcommand = newcommand + ") ";
+		}
+		else newcommand = newcommand + tok + " ";
+	}
+	return newcommand;
+}

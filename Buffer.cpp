@@ -24,11 +24,13 @@ void Buffer::init(const std::string & input)
 	int i = 0;
 	while (temp[i] != NULL)
 	{
-		if (temp[i] == '('|| temp[i] == '\'') temp = temp.insert(i + 1, " "), ++i;
-		else if (temp[i] == ')') temp = temp.insert(i + 1, " "), temp = temp.insert(i, " "), i += 2;
+		if (temp[i] == '('|| temp[i] == '\'') temp = temp.insert(size_t(i) + size_t(1), " "), ++i;
+		else if (temp[i] == ')') temp = temp.insert(size_t(i) + size_t(1), " "), temp = temp.insert(i, " "), i += 2;
 		++i;
 	}
-	this->ss.str(temp);
+	ss.str(temp);
+	ss.str(preprocessing());
+	ss.clear();
 }
 
 void Buffer::pushBack()

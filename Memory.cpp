@@ -1,4 +1,35 @@
 #include "Memory.h"
+#include <string>
+#include <sstream>
+using namespace symbols;
+
+bool isFloat(const std::string& input)
+{
+	int i = 0;
+	if (isdigit(input[i]) || input[i] == '-')
+	{
+		int cnt = 0;
+		for (i = 1; input[i] != '\0'; ++i)
+		{
+			if (input[i] == '.')
+			{
+				++cnt;
+				if (cnt - 1) return false;
+			}
+			else if (!isdigit(input[i])) return false;
+		}
+	}
+	else return false;
+	return true;
+}
+
+template<typename T>
+std::string tostr(const T& input)
+{
+	std::stringstream ss;
+	ss << input;
+	return ss.str();
+}
 
 void MemoryTable::setNode_root(int ind)
 {
@@ -101,6 +132,20 @@ void MemoryTable::dealloc(void)
 	node_root = 0;
 }
 
+int MemoryTable::eval(void)
+{
+	return eval(node_root);
+}
+
+float* MemoryTable::cal_float(int root)
+{
+	float* arr = new float[2];
+	int root_right = memorytable[root].getRight();
+	arr[0] = stof(hashtable[-eval(memorytable[root_right].getLeft())].getSymbol());
+	arr[1] = stof(hashtable[-eval(memorytable[memorytable[root_right].getRight()].getLeft())].getSymbol());
+	return arr;
+}
+
 void MemoryTable::initmemorytable(void)
 {
 	int len = SIZE_OF_MEMORY_TABLE;
@@ -131,4 +176,105 @@ void MemoryTable::printTable(void)
 		else
 			std::cout << " |" << std::setw(8) << "NIL" << " |\n";
 	}
+}
+
+int MemoryTable::eval(int root)
+{
+	if (root <= 0)
+		return hashtable[-root].getValue_index();
+	int tok_ind = memorytable[root].getLeft();
+	if (tok_ind == PLUS)
+	{
+		float* two = cal_float(root);
+		std::string sresult = tostr<float>(two[0] + two[1]);
+		delete[] two;
+		hashtable.hashinsert(sresult);
+		return hashtable.hashfunc(sresult);
+	}
+	else if (tok_ind == MINUS)
+	{
+		float* two = cal_float(root);
+		std::string sresult = tostr<float>(two[0] - two[1]);
+		delete[] two;
+		hashtable.hashinsert(sresult);
+		return hashtable.hashfunc(sresult);
+	}
+	else if (tok_ind == TIMES)
+	{
+		float* two = cal_float(root);
+		std::string sresult = tostr<float>(two[0] * two[1]);
+		delete[] two;
+		hashtable.hashinsert(sresult);
+		return hashtable.hashfunc(sresult);
+	}
+	else if (tok_ind == isNUMBER)
+	{
+		int result_ind = eval(memorytable[memorytable[root].getRight()].getLeft());
+		if (result_ind > 0) return FALSE;
+		else
+		{
+			std::string temp = hashtable[-result_ind].getSymbol();
+			if (isFloat(temp)) return TRUE;
+			else return FALSE;
+		}
+	}
+	else if (tok_ind == isSYMBOL)
+	{
+		int result_ind = eval(memorytable[memorytable[root].getRight()].getLeft());
+		if (result_ind > 0) return FALSE;
+		else
+		{
+			std::string temp = hashtable[-result_ind].getSymbol();
+			if (isFloat(temp)) return FALSE;
+			else return TRUE;
+		}
+	}
+	else if (tok_ind == isNULL)
+	{
+		if (eval(memorytable[root].getRight()) == NIL)
+			return TRUE;
+		return FALSE;
+	}
+	else if (tok_ind == CONS)
+	{
+
+	}
+	else if (tok_ind == COND)
+	{
+
+	}
+	else if (tok_ind == CAR)
+	{
+		return memorytable[eval(memorytable[memorytable[root].getRight()].getLeft())].getLeft();
+	}
+	else if (tok_ind == CDR)	
+	{
+		return memorytable[eval(memorytable[memorytable[root].getRight()].getLeft())].getRight();
+	}
+	else if (tok_ind == DEFINE)
+	{
+		int rr_ind = memorytable[memorytable[root].getRight()].getRight();
+		if (memorytable[rr_ind].getLeft() < 0);
+		else if (memorytable[memorytable[rr_ind].getLeft()].getLeft() == LAMBDA)
+		{
+			hashtable[-memorytable[memorytable[root].getRight()].getLeft()].setValue_index(
+				memorytable[rr_ind].getLeft()
+			);
+			std::cout << "lambda case" << std::endl;
+			return 0;
+		}
+		hashtable[-memorytable[memorytable[root].getRight()].getLeft()].setValue_index(
+			eval(memorytable[rr_ind].getLeft())
+		);
+		std::cout << "var case" << std::endl;
+		return 0;
+	}
+	else if (tok_ind == QUOTE)
+		return memorytable[memorytable[root].getRight()].getLeft();
+}
+
+void MemoryTable::printEval(int result_ind)
+{
+	if (result_ind > 0);
+	else std::cout << hashtable[-result_ind].getSymbol() << std::endl;
 }

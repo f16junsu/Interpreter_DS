@@ -1,9 +1,10 @@
 #pragma once
+#include "Symbols.h"
 #include <iostream>
 #include <iomanip>
 
 #define SIZE_OF_MEMORY_TABLE 30
-#define SIZE_OF_HASH_TABLE 1000
+#define SIZE_OF_HASH_TABLE 997
 class HashNode
 {
 private:
@@ -24,10 +25,11 @@ private:
 	HashNode* hashtable;
 
 public:
-	HashTable() { hashtable = new HashNode[SIZE_OF_HASH_TABLE]; }
+	HashTable() { hashtable = new HashNode[SIZE_OF_HASH_TABLE]; tableinit(); }
 	~HashTable() { delete[] hashtable; }
 	int hashfunc(const std::string& input);
 	void hashinsert(const std::string& input);
+	void tableinit(void);
 	HashNode& operator[](int ind) { return hashtable[ind]; }
 	void printTable(void);
 };

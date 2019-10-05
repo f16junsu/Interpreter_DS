@@ -1,6 +1,8 @@
 #pragma once
 #include "Hash.h"
 
+bool isFloat(const std::string& input);
+
 class MemoryNode
 {
 private:
@@ -25,7 +27,8 @@ private:
 	void setMemoryNode(int ind);
 	std::string echo(int ind);
 	void dealloc(int ind);
-
+	int eval(int root);
+	float* cal_float(int root);
 public:
 	MemoryTable(HashTable& hashtable) : hashtable(hashtable) { memorytable = new MemoryNode[SIZE_OF_MEMORY_TABLE], free_list = 1, node_root = 1; }
 	~MemoryTable() { delete[] memorytable; }
@@ -40,4 +43,6 @@ public:
 	std::string echo(void);
 	void print(void);
 	void dealloc(void);
+	int eval(void);
+	void printEval(int result_ind);
 };

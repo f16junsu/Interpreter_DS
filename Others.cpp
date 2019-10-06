@@ -1,5 +1,25 @@
 #include "Others.h"
 
+bool isFloat(const std::string& input)
+{
+	int i = 0;
+	if (isdigit(input[i]) || input[i] == '-')
+	{
+		int cnt = 0;
+		for (i = 1; input[i] != '\0'; ++i)
+		{
+			if (input[i] == '.')
+			{
+				++cnt;
+				if (cnt - 1) return false;
+			}
+			else if (!isdigit(input[i])) return false;
+		}
+	}
+	else return false;
+	return true;
+}
+
 int read(Buffer & buf, HashTable & hashtable, MemoryTable & memorytable)
 {
 	int root = 0;
@@ -23,9 +43,7 @@ int read(Buffer & buf, HashTable & hashtable, MemoryTable & memorytable)
 				buf.pushBack(), memorytable[temp].setLeft(read(buf, hashtable, memorytable));
 			else
 			{
-				bool t = isFloat(tok);
 				hashtable.hashinsert(tok);
-				if (t) hashtable[-hashtable.hashfunc(tok)].setValue_index(hashtable.hashfunc(tok));
 				memorytable[temp].setLeft(hashtable.hashfunc(tok));
 			}
 			memorytable[temp].setRight(0);
@@ -51,12 +69,12 @@ void run(HashTable & hashtable, MemoryTable & memorytable, Buffer & buf)
 		memorytable.setNode_root(read(buf, hashtable, memorytable));
 		//std::cout << "] " << "Free list's root = " << memorytable.getFree_list() << std::endl;
 		//std::cout << "  " << "List's root = " << memorytable.getNode_root() << std::endl;
-		memorytable.printTable();
-		std::cout << std::endl;
 		//memorytable.print();
 		int result = memorytable.eval();
+		memorytable.printTable();
+		std::cout << std::endl;
 		hashtable.printTable();
 		memorytable.printEval(result);
-		memorytable.dealloc();
+		//memorytable.dealloc();
 	}
 }

@@ -1,7 +1,6 @@
 #pragma once
 #include "Hash.h"
-
-bool isFloat(const std::string& input);
+#include "Stack.h"
 
 class MemoryNode
 {
@@ -22,27 +21,27 @@ class MemoryTable
 private:
 	MemoryNode* memorytable;
 	HashTable& hashtable;
+	Stack stack;
 	int free_list;
 	int node_root;
-	void setMemoryNode(int ind);
-	std::string echo(int ind);
-	void dealloc(int ind);
-	int eval(int root);
-	float* cal_float(int root);
+	std::string echo(int ind); // function called in 'string echo(void)' 
+	void dealloc(int ind); // function called in 'void dealloc(void)'
+	int eval(int root); // function called in 'int eval(void)'
+	float* cal_float(int root); // function called in 'int eval(int root)'
 public:
-	MemoryTable(HashTable& hashtable) : hashtable(hashtable) { memorytable = new MemoryNode[SIZE_OF_MEMORY_TABLE], free_list = 1, node_root = 1; }
+	MemoryTable(HashTable& hashtable) : hashtable(hashtable), stack(Stack(20))
+	{ memorytable = new MemoryNode[SIZE_OF_MEMORY_TABLE], free_list = 1, node_root = 0; }
 	~MemoryTable() { delete[] memorytable; }
 	void initmemorytable(void);
 	MemoryNode& operator[](int ind) { return memorytable[ind]; }
-	void setNode_root(int ind);
+	void setNode_root(int ind) { node_root = ind; }
 	int alloc(void);
-	void initFree_list(void) { free_list = 1; }
 	int getFree_list(void) { return free_list; }
 	int getNode_root(void) { return node_root; }
 	void printTable(void);
 	std::string echo(void);
-	void print(void);
+	void print(void); // function which prints the echoed string
 	void dealloc(void);
-	int eval(void);
+	int eval(void) { return eval(node_root); }
 	void printEval(int result_ind);
 };

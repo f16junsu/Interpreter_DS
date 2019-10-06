@@ -6,5 +6,6 @@ int main(void)
 	MemoryTable memorytable(hashtable);
 	Buffer buf;
 	run(hashtable, memorytable, buf);
+
 	return 0;
 }

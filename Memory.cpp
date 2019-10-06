@@ -1,27 +1,8 @@
 #include "Memory.h"
+#include "Others.h"
 #include <string>
 #include <sstream>
 using namespace symbols;
-
-bool isFloat(const std::string& input)
-{
-	int i = 0;
-	if (isdigit(input[i]) || input[i] == '-')
-	{
-		int cnt = 0;
-		for (i = 1; input[i] != '\0'; ++i)
-		{
-			if (input[i] == '.')
-			{
-				++cnt;
-				if (cnt - 1) return false;
-			}
-			else if (!isdigit(input[i])) return false;
-		}
-	}
-	else return false;
-	return true;
-}
 
 template<typename T>
 std::string tostr(const T& input)
@@ -29,18 +10,6 @@ std::string tostr(const T& input)
 	std::stringstream ss;
 	ss << input;
 	return ss.str();
-}
-
-void MemoryTable::setNode_root(int ind)
-{
-	node_root = ind;
-}
-
-void MemoryTable::setMemoryNode(int ind)
-{
-	memorytable[ind].setLeft(0);
-	memorytable[ind].setRight(free_list);
-	free_list = ind;
 }
 
 std::string MemoryTable::echo(int ind)
@@ -68,47 +37,15 @@ std::string MemoryTable::echo(int ind)
 
 std::string MemoryTable::echo(void)
 {
-	if (node_root == 0)
-		return "()";
+	if (node_root == 0) return "()";
 	return "(" + echo(node_root);
 }
 
 void MemoryTable::print(void)
 {
-	if (node_root < 0)
-		std::cout << hashtable[-node_root].getSymbol() << std::endl;
-	else
-		std::cout << echo() << std::endl;
+	if (node_root < 0) std::cout << hashtable[-node_root].getSymbol() << std::endl;
+	else std::cout << echo() << std::endl;
 }
-
-/*
-void MemoryTable::dealloc(int ind)
-{
-	int l, r;
-	if (r = memorytable[ind].getRight())
-	{
-		if ((l = memorytable[ind].getLeft()) < 0)
-			dealloc(r), setMemoryNode(ind);
-		else
-		{
-			if (l == 0) return;
-			dealloc(r);
-			dealloc(l);
-			setMemoryNode(ind);
-		}
-	}
-	else
-	{
-		if ((l = memorytable[ind].getLeft()) < 0)
-			setMemoryNode(ind);
-		else
-		{
-			if (l == 0) return;
-			dealloc(l), setMemoryNode(ind);
-		}
-	}
-}
-*/
 
 void MemoryTable::dealloc(int ind)
 {
@@ -130,11 +67,6 @@ void MemoryTable::dealloc(void)
 	}
 	dealloc(node_root);
 	node_root = 0;
-}
-
-int MemoryTable::eval(void)
-{
-	return eval(node_root);
 }
 
 float* MemoryTable::cal_float(int root)
@@ -231,13 +163,17 @@ int MemoryTable::eval(int root)
 	}
 	else if (tok_ind == isNULL)
 	{
-		if (eval(memorytable[root].getRight()) == NIL)
-			return TRUE;
+		if (eval(memorytable[root].getRight()) == NIL) return TRUE;
 		return FALSE;
 	}
 	else if (tok_ind == CONS)
 	{
-
+		int newmemory = alloc();
+		memorytable[newmemory].setLeft(eval(memorytable[memorytable[root].getRight()].getLeft()));
+		memorytable[newmemory].setRight(eval(
+			memorytable[memorytable[memorytable[root].getRight()].getRight()].getLeft()
+		));
+		return newmemory;
 	}
 	else if (tok_ind == COND)
 	{
@@ -247,7 +183,7 @@ int MemoryTable::eval(int root)
 	{
 		return memorytable[eval(memorytable[memorytable[root].getRight()].getLeft())].getLeft();
 	}
-	else if (tok_ind == CDR)	
+	else if (tok_ind == CDR)
 	{
 		return memorytable[eval(memorytable[memorytable[root].getRight()].getLeft())].getRight();
 	}
@@ -260,21 +196,48 @@ int MemoryTable::eval(int root)
 			hashtable[-memorytable[memorytable[root].getRight()].getLeft()].setValue_index(
 				memorytable[rr_ind].getLeft()
 			);
-			std::cout << "lambda case" << std::endl;
 			return 0;
 		}
 		hashtable[-memorytable[memorytable[root].getRight()].getLeft()].setValue_index(
 			eval(memorytable[rr_ind].getLeft())
 		);
-		std::cout << "var case" << std::endl;
 		return 0;
 	}
 	else if (tok_ind == QUOTE)
+	{
 		return memorytable[memorytable[root].getRight()].getLeft();
+	}
+	else
+	{
+		int lamb = eval(tok_ind); // 4
+		int iter_paras, iter_factors;
+		int cnt = 0;
+		if ((iter_paras = memorytable[memorytable[lamb].getRight()].getLeft())) // iter_paras = 6
+		{
+			iter_factors = memorytable[root].getRight();
+			do
+			{
+				stack.push(Node(memorytable[iter_paras].getLeft(),
+					hashtable[-memorytable[iter_paras].getLeft()].getValue_index()));
+				hashtable[-memorytable[iter_paras].getLeft()].setValue_index(eval(memorytable[iter_factors].getLeft()));
+				iter_paras = memorytable[iter_paras].getRight();
+				iter_factors = memorytable[iter_factors].getRight();
+				++cnt;
+			} while (iter_factors);
+		}
+		int result = eval(memorytable[memorytable[memorytable[lamb].getRight()].getRight()].getLeft());
+		while (cnt)
+		{
+			Node temp = stack.pop();
+			hashtable[-temp.getHash_val()].setValue_index(temp.getLink_val());
+			--cnt;
+		}
+		return result;
+	}
 }
 
 void MemoryTable::printEval(int result_ind)
 {
-	if (result_ind > 0);
+	if (result_ind > 0) std::cout << "'(" + echo(result_ind) << std::endl;
 	else std::cout << hashtable[-result_ind].getSymbol() << std::endl;
 }

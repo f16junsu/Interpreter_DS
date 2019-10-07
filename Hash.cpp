@@ -60,6 +60,7 @@ void HashTable::tableinit(void)
 	hashinsert("#t");
 	hashinsert("#f");
 	hashinsert("lambda");
+	hashinsert("else");
 	hashtable[0].setSymbol("NIL");
 	for (int i = 0; i < SIZE_OF_HASH_TABLE; ++i)
 		hashtable[i].setValue_index(0);

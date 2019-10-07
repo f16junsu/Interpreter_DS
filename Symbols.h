@@ -19,4 +19,5 @@ namespace symbols
 	const int TRUE = -151;
 	const int FALSE = -137;
 	const int LAMBDA = -609;
+	const int ELSE = -425;
 }

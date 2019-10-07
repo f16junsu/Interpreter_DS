@@ -1,4 +1,6 @@
 #pragma once
+#include <stdexcept>
+
 class Node
 {
 private:

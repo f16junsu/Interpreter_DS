@@ -3,8 +3,10 @@
 
 void Stack::push(Node input)
 {
-	if (top == capacity - 1) std::cout << "Stack Overflowed" << std::endl;
-	else stack[++top].set(input.getHash_val(), input.getLink_val());
+	try { if (top == capacity - 1) throw std::runtime_error("Stack Overflowed"); }
+	catch (std::exception & e) { std::cout << e.what() << std::endl; }
+	
+	stack[++top].set(input.getHash_val(), input.getLink_val());
 }
 
 Node Stack::pop(void)

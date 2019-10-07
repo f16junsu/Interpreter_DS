@@ -153,7 +153,7 @@ int MemoryTable::eval(int root)
 	else if (tok_ind == isSYMBOL)
 	{
 		int result_ind = eval(memorytable[memorytable[root].getRight()].getLeft());
-		if (result_ind > 0) return FALSE;
+		if (result_ind >= 0) return FALSE;
 		else
 		{
 			std::string temp = hashtable[-result_ind].getSymbol();
@@ -177,7 +177,20 @@ int MemoryTable::eval(int root)
 	}
 	else if (tok_ind == COND)
 	{
-
+		int cond_root = root;
+		while (memorytable[memorytable[cond_root].getRight()].getRight()) // (cond ((number? 3) (* 2 2)) (else (* 5 5)))
+		{
+			cond_root = memorytable[cond_root].getRight();
+			if (eval(memorytable[memorytable[cond_root].getLeft()].getLeft()) == TRUE)
+				return eval(memorytable[memorytable[memorytable[cond_root].getLeft()].getRight()].getLeft());
+		}
+		try
+		{
+			if (memorytable[memorytable[memorytable[cond_root].getRight()].getLeft()].getLeft() != ELSE)
+				throw std::runtime_error("else expected : enter again");
+		}
+		catch (std::exception & e) { std::cout << e.what() << std::endl; }
+		return eval(memorytable[memorytable[memorytable[memorytable[cond_root].getRight()].getLeft()].getRight()].getLeft());
 	}
 	else if (tok_ind == CAR)
 	{
@@ -239,5 +252,12 @@ int MemoryTable::eval(int root)
 void MemoryTable::printEval(int result_ind)
 {
 	if (result_ind > 0) std::cout << "'(" + echo(result_ind) << std::endl;
-	else std::cout << hashtable[-result_ind].getSymbol() << std::endl;
+	else if (result_ind == 0) std::cout << "NIL" << std::endl;
+	else 
+	{
+		std::string temp = hashtable[-result_ind].getSymbol();
+		if (isFloat(temp)) std::cout << temp << std::endl;
+		else if (result_ind == TRUE || result_ind == FALSE) std::cout << temp << std::endl;
+		else std::cout << "'" + temp << std::endl;
+	}
 }

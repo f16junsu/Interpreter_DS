@@ -4,6 +4,31 @@
 #include <sstream>
 using namespace symbols;
 
+bool isPredefined(int check)
+{
+	if (check == NIL) return true;
+	if (check == LEFT_PAREN) return true;
+	if (check == RIGHT_PAREN) return true;
+	if (check == DEFINE) return true;
+	if (check == QUOTE) return true;
+	if (check == PLUS) return true;
+	if (check == MINUS) return true;
+	if (check == TIMES) return true;
+	if (check == isNUMBER) return true;
+	if (check == isSYMBOL) return true;
+	if (check == isNULL) return true;
+	if (check == CONS) return true;
+	if (check == COND) return true;
+	if (check == CAR) return true;
+	if (check == CDR) return true;
+	if (check == TRUE) return true;
+	if (check == FALSE) return true;
+	if (check == LAMBDA) return true;
+	if (check == ELSE) return true;
+	if (check == UNDEFINED) return true;
+	return false;
+}
+
 template<typename T>
 std::string tostr(const T& input)
 {
@@ -94,7 +119,6 @@ int MemoryTable::alloc(void)
 	return temp;
 }
 
-
 void MemoryTable::printTable(void)
 {
 	std::cout << "Memory Table : \n|   i  |   Left   |  Right  | \n";
@@ -112,9 +136,9 @@ void MemoryTable::printTable(void)
 
 int MemoryTable::eval(int root)
 {
-	if (root <= 0)
-		return hashtable[-root].getValue_index();
-	int tok_ind = memorytable[root].getLeft();
+	if (root <= 0) return hashtable[-root].getValue_index();
+	int tok_ind = eval(memorytable[root].getLeft());
+	if (memorytable[root].getLeft() > 0) tok_ind = memorytable[root].getLeft();
 	if (tok_ind == PLUS)
 	{
 		float* two = cal_float(root);
@@ -157,13 +181,13 @@ int MemoryTable::eval(int root)
 		else
 		{
 			std::string temp = hashtable[-result_ind].getSymbol();
-			if (isFloat(temp)) return FALSE;
+			if (isFloat(temp) || isPredefined(result_ind)) return FALSE;
 			else return TRUE;
 		}
 	}
 	else if (tok_ind == isNULL)
 	{
-		if (eval(memorytable[root].getRight()) == NIL) return TRUE;
+		if (eval(memorytable[memorytable[root].getRight()].getLeft()) == NIL) return TRUE;
 		return FALSE;
 	}
 	else if (tok_ind == CONS)
@@ -184,12 +208,8 @@ int MemoryTable::eval(int root)
 			if (eval(memorytable[memorytable[cond_root].getLeft()].getLeft()) == TRUE)
 				return eval(memorytable[memorytable[memorytable[cond_root].getLeft()].getRight()].getLeft());
 		}
-		try
-		{
-			if (memorytable[memorytable[memorytable[cond_root].getRight()].getLeft()].getLeft() != ELSE)
-				throw std::runtime_error("else expected : enter again");
-		}
-		catch (std::exception & e) { std::cout << e.what() << std::endl; }
+		if (memorytable[memorytable[memorytable[cond_root].getRight()].getLeft()].getLeft() != ELSE)
+			throw std::runtime_error("else expected : enter again");
 		return eval(memorytable[memorytable[memorytable[memorytable[cond_root].getRight()].getLeft()].getRight()].getLeft());
 	}
 	else if (tok_ind == CAR)
@@ -220,9 +240,9 @@ int MemoryTable::eval(int root)
 	{
 		return memorytable[memorytable[root].getRight()].getLeft();
 	}
-	else
+	else if (tok_ind > 0 && tok_ind != INT_MAX) // User defined function
 	{
-		int lamb = eval(tok_ind); // 4
+		int lamb = tok_ind; // 4
 		int iter_paras, iter_factors;
 		int cnt = 0;
 		if ((iter_paras = memorytable[memorytable[lamb].getRight()].getLeft())) // iter_paras = 6
@@ -232,11 +252,23 @@ int MemoryTable::eval(int root)
 			{
 				stack.push(Node(memorytable[iter_paras].getLeft(),
 					hashtable[-memorytable[iter_paras].getLeft()].getValue_index()));
-				hashtable[-memorytable[iter_paras].getLeft()].setValue_index(eval(memorytable[iter_factors].getLeft()));
 				iter_paras = memorytable[iter_paras].getRight();
-				iter_factors = memorytable[iter_factors].getRight();
 				++cnt;
+			} while (iter_paras);
+			int* temp = new int[cnt];
+			int i = 0;
+			do
+			{
+				temp[i] = eval(memorytable[iter_factors].getLeft()); i++;
+				iter_factors = memorytable[iter_factors].getRight();
 			} while (iter_factors);
+			i = 0, iter_paras = memorytable[memorytable[lamb].getRight()].getLeft();
+			do
+			{
+				hashtable[-memorytable[iter_paras].getLeft()].setValue_index(temp[i]); i++;
+				iter_paras = memorytable[iter_paras].getRight();
+			} while (iter_paras);
+			delete[] temp;
 		}
 		int result = eval(memorytable[memorytable[memorytable[lamb].getRight()].getRight()].getLeft());
 		while (cnt)
@@ -247,17 +279,23 @@ int MemoryTable::eval(int root)
 		}
 		return result;
 	}
+	else
+	{
+		if (hashtable[-tok_ind].getValue_index() == INT_MAX)
+			throw std::runtime_error("Undefined behavior"); 
+	}
 }
 
 void MemoryTable::printEval(int result_ind)
 {
-	if (result_ind > 0) std::cout << "'(" + echo(result_ind) << std::endl;
-	else if (result_ind == 0) std::cout << "NIL" << std::endl;
+	if (result_ind > 0) std::cout << "(" + echo(result_ind) << std::endl;
+	else if (result_ind == 0) std::cout << "()" << std::endl;
+	else if (result_ind == INT_MAX) std::cout << "Undefined" << std::endl;
 	else 
 	{
 		std::string temp = hashtable[-result_ind].getSymbol();
 		if (isFloat(temp)) std::cout << temp << std::endl;
 		else if (result_ind == TRUE || result_ind == FALSE) std::cout << temp << std::endl;
-		else std::cout << "'" + temp << std::endl;
+		else std::cout << temp << std::endl;
 	}
 }

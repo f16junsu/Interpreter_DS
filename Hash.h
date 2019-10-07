@@ -3,7 +3,7 @@
 #include <iostream>
 #include <iomanip>
 
-#define SIZE_OF_MEMORY_TABLE 40
+#define SIZE_OF_MEMORY_TABLE 1000
 #define SIZE_OF_HASH_TABLE 997
 class HashNode
 {

@@ -1,9 +1,10 @@
 #pragma once
+#include <iostream>
 namespace symbols
 {
 	const int NIL = 0;
 	const int LEFT_PAREN = -40;
-	const int RIGHT_PAREN = -42;
+	const int RIGHT_PAREN = -41;
 	const int DEFINE = -619;
 	const int QUOTE = -558;
 	const int PLUS = -43;
@@ -20,4 +21,5 @@ namespace symbols
 	const int FALSE = -137;
 	const int LAMBDA = -609;
 	const int ELSE = -425;
+	const int UNDEFINED = INT_MAX;
 }

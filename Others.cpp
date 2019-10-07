@@ -3,7 +3,7 @@
 bool isFloat(const std::string& input)
 {
 	int i = 0;
-	if (isdigit(input[i]) || input[i] == '-')
+	if (isdigit(input[i]) || input[i] == '-' || input[i] == '+')
 	{
 		int cnt = 0;
 		for (i = 1; input[i] != '\0'; ++i)
@@ -67,14 +67,8 @@ void run(HashTable & hashtable, MemoryTable & memorytable, Buffer & buf)
 		std::getline(std::cin, input);
 		buf.init(input);
 		memorytable.setNode_root(read(buf, hashtable, memorytable));
-		//std::cout << "] " << "Free list's root = " << memorytable.getFree_list() << std::endl;
-		//std::cout << "  " << "List's root = " << memorytable.getNode_root() << std::endl;
-		//memorytable.print();
-		int result = memorytable.eval();
-		memorytable.printTable();
-		std::cout << std::endl;
-		hashtable.printTable();
-		memorytable.printEval(result);
-		//memorytable.dealloc();
+		int result;
+		try { result = memorytable.eval(); memorytable.printEval(result); }
+		catch (std::exception & e) { std::cout << e.what() << std::endl; }
 	}
 }

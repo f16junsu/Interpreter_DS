@@ -136,7 +136,12 @@ void MemoryTable::printTable(void)
 
 int MemoryTable::eval(int root)
 {
-	if (root <= 0) return hashtable[-root].getValue_index();
+	if (root <= 0)
+	{
+		int temp = hashtable[-root].getValue_index();
+		if (temp == INT_MAX) throw std::runtime_error("Undefined Variable");
+		else return temp;
+	}
 	int tok_ind = eval(memorytable[root].getLeft());
 	if (memorytable[root].getLeft() > 0) tok_ind = memorytable[root].getLeft();
 	if (tok_ind == PLUS)
@@ -243,11 +248,10 @@ int MemoryTable::eval(int root)
 	else if (tok_ind > 0 && tok_ind != INT_MAX) // User defined function
 	{
 		int lamb = tok_ind; // 4
-		int iter_paras, iter_factors;
+		int iter_paras, iter_factors = 0;
 		int cnt = 0;
 		if ((iter_paras = memorytable[memorytable[lamb].getRight()].getLeft())) // iter_paras = 6
 		{
-			iter_factors = memorytable[root].getRight();
 			do
 			{
 				stack.push(Node(memorytable[iter_paras].getLeft(),
@@ -255,20 +259,22 @@ int MemoryTable::eval(int root)
 				iter_paras = memorytable[iter_paras].getRight();
 				++cnt;
 			} while (iter_paras);
-			int* temp = new int[cnt];
-			int i = 0;
+			iter_paras = memorytable[memorytable[lamb].getRight()].getLeft();
+			iter_factors = memorytable[root].getRight();
 			do
 			{
-				temp[i] = eval(memorytable[iter_factors].getLeft()); i++;
+				stack.push(Node(memorytable[iter_paras].getLeft(),
+					eval(memorytable[iter_factors].getLeft())));
+				iter_paras = memorytable[iter_paras].getRight();
 				iter_factors = memorytable[iter_factors].getRight();
 			} while (iter_factors);
-			i = 0, iter_paras = memorytable[memorytable[lamb].getRight()].getLeft();
+			iter_paras = memorytable[memorytable[lamb].getRight()].getLeft();
 			do
 			{
-				hashtable[-memorytable[iter_paras].getLeft()].setValue_index(temp[i]); i++;
+				Node temp = stack.pop();
+				hashtable[-temp.getHash_val()].setValue_index(temp.getLink_val());
 				iter_paras = memorytable[iter_paras].getRight();
 			} while (iter_paras);
-			delete[] temp;
 		}
 		int result = eval(memorytable[memorytable[memorytable[lamb].getRight()].getRight()].getLeft());
 		while (cnt)
@@ -279,11 +285,7 @@ int MemoryTable::eval(int root)
 		}
 		return result;
 	}
-	else
-	{
-		if (hashtable[-tok_ind].getValue_index() == INT_MAX)
-			throw std::runtime_error("Undefined behavior"); 
-	}
+	else throw std::runtime_error("Undefined behavior"); 
 }
 
 void MemoryTable::printEval(int result_ind)

@@ -1,5 +1,30 @@
 #include "Others.h"
 
+bool isPredefined(int check)
+{
+	if (check == NIL) return true;
+	if (check == LEFT_PAREN) return true;
+	if (check == RIGHT_PAREN) return true;
+	if (check == DEFINE) return true;
+	if (check == QUOTE) return true;
+	if (check == PLUS) return true;
+	if (check == MINUS) return true;
+	if (check == TIMES) return true;
+	if (check == isNUMBER) return true;
+	if (check == isSYMBOL) return true;
+	if (check == isNULL) return true;
+	if (check == CONS) return true;
+	if (check == COND) return true;
+	if (check == CAR) return true;
+	if (check == CDR) return true;
+	if (check == TRUE) return true;
+	if (check == FALSE) return true;
+	if (check == LAMBDA) return true;
+	if (check == ELSE) return true;
+	if (check == UNDEFINED) return true;
+	return false;
+}
+
 bool isFloat(const std::string& input)
 {
 	int i = 0;
@@ -20,7 +45,7 @@ bool isFloat(const std::string& input)
 	return true;
 }
 
-int read(Buffer & buf, HashTable & hashtable, MemoryTable & memorytable)
+int read(Buffer & buf, HashTable& hashtable, MemoryTable & memorytable)
 {
 	int root = 0;
 	int temp = 0;
@@ -54,21 +79,4 @@ int read(Buffer & buf, HashTable & hashtable, MemoryTable & memorytable)
 		return root;
 	hashtable.hashinsert(tok);
 	return hashtable.hashfunc(tok);
-}
-
-void run(HashTable & hashtable, MemoryTable & memorytable, Buffer & buf)
-{
-	memorytable.initmemorytable();
-
-	while (true)
-	{
-		std::cout << "> ";
-		std::string input;
-		std::getline(std::cin, input);
-		buf.init(input);
-		memorytable.setNode_root(read(buf, hashtable, memorytable));
-		int result;
-		try { result = memorytable.eval(); memorytable.printEval(result); }
-		catch (std::exception & e) { std::cout << e.what() << std::endl; }
-	}
 }

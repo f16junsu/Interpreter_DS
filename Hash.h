@@ -2,9 +2,12 @@
 #include "Symbols.h"
 #include <iostream>
 #include <iomanip>
+#include "Symbols.h"
+
+using namespace symbols;
 
 #define SIZE_OF_MEMORY_TABLE 1000
-#define SIZE_OF_HASH_TABLE 997
+#define SIZE_OF_HASH_TABLE 1031
 class HashNode
 {
 private:
@@ -12,7 +15,7 @@ private:
 	int value_index;
 
 public:
-	HashNode() { this->symbol = std::string(), this->value_index = 0; }
+	HashNode() { this->symbol = std::string(), this->value_index = UNDEFINED; }
 	std::string getSymbol(void) { return this->symbol; }
 	int getValue_index(void) { return this->value_index; }
 	void setSymbol(std::string val) { this->symbol = val; }
@@ -23,7 +26,6 @@ class HashTable
 {
 private:
 	HashNode* hashtable;
-
 public:
 	HashTable() { hashtable = new HashNode[SIZE_OF_HASH_TABLE]; tableinit(); }
 	~HashTable() { delete[] hashtable; }

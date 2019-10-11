@@ -1,11 +1,7 @@
-#include "Others.h"
+#include "Run.h"
 
 int main(void)
 {
-	HashTable hashtable;
-	MemoryTable memorytable(hashtable);
-	Buffer buf;
-	run(hashtable, memorytable, buf);
-
+	run();
 	return 0;
 }

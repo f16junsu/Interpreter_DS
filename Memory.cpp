@@ -2,40 +2,6 @@
 #include "Others.h"
 #include <string>
 #include <sstream>
-using namespace symbols;
-
-bool isPredefined(int check)
-{
-	if (check == NIL) return true;
-	if (check == LEFT_PAREN) return true;
-	if (check == RIGHT_PAREN) return true;
-	if (check == DEFINE) return true;
-	if (check == QUOTE) return true;
-	if (check == PLUS) return true;
-	if (check == MINUS) return true;
-	if (check == TIMES) return true;
-	if (check == isNUMBER) return true;
-	if (check == isSYMBOL) return true;
-	if (check == isNULL) return true;
-	if (check == CONS) return true;
-	if (check == COND) return true;
-	if (check == CAR) return true;
-	if (check == CDR) return true;
-	if (check == TRUE) return true;
-	if (check == FALSE) return true;
-	if (check == LAMBDA) return true;
-	if (check == ELSE) return true;
-	if (check == UNDEFINED) return true;
-	return false;
-}
-
-template<typename T>
-std::string tostr(const T& input)
-{
-	std::stringstream ss;
-	ss << input;
-	return ss.str();
-}
 
 std::string MemoryTable::echo(int ind)
 {
@@ -232,8 +198,7 @@ int MemoryTable::eval(int root)
 		else if (memorytable[memorytable[rr_ind].getLeft()].getLeft() == LAMBDA)
 		{
 			hashtable[-memorytable[memorytable[root].getRight()].getLeft()].setValue_index(
-				memorytable[rr_ind].getLeft()
-			);
+				memorytable[rr_ind].getLeft());
 			return 0;
 		}
 		hashtable[-memorytable[memorytable[root].getRight()].getLeft()].setValue_index(
@@ -245,38 +210,37 @@ int MemoryTable::eval(int root)
 	{
 		return memorytable[memorytable[root].getRight()].getLeft();
 	}
-	else if (tok_ind > 0 && tok_ind != INT_MAX) // User defined function
+	else if (memorytable[tok_ind].getLeft() == LAMBDA) // User defined function
 	{
-		int lamb = tok_ind; // 4
 		int iter_paras, iter_factors = 0;
 		int cnt = 0;
-		if ((iter_paras = memorytable[memorytable[lamb].getRight()].getLeft())) // iter_paras = 6
+		if ((iter_paras = memorytable[memorytable[tok_ind].getRight()].getLeft())) // iter_paras = 6
 		{
-			do
+			while (iter_paras)
 			{
 				stack.push(Node(memorytable[iter_paras].getLeft(),
 					hashtable[-memorytable[iter_paras].getLeft()].getValue_index()));
 				iter_paras = memorytable[iter_paras].getRight();
 				++cnt;
-			} while (iter_paras);
-			iter_paras = memorytable[memorytable[lamb].getRight()].getLeft();
+			} 
+			iter_paras = memorytable[memorytable[tok_ind].getRight()].getLeft();
 			iter_factors = memorytable[root].getRight();
-			do
+			while (iter_factors)
 			{
 				stack.push(Node(memorytable[iter_paras].getLeft(),
 					eval(memorytable[iter_factors].getLeft())));
 				iter_paras = memorytable[iter_paras].getRight();
 				iter_factors = memorytable[iter_factors].getRight();
-			} while (iter_factors);
-			iter_paras = memorytable[memorytable[lamb].getRight()].getLeft();
-			do
+			} 
+			iter_paras = memorytable[memorytable[tok_ind].getRight()].getLeft();
+			while (iter_paras)
 			{
 				Node temp = stack.pop();
 				hashtable[-temp.getHash_val()].setValue_index(temp.getLink_val());
 				iter_paras = memorytable[iter_paras].getRight();
-			} while (iter_paras);
+			} 
 		}
-		int result = eval(memorytable[memorytable[memorytable[lamb].getRight()].getRight()].getLeft());
+		int result = eval(memorytable[memorytable[memorytable[tok_ind].getRight()].getRight()].getLeft());
 		while (cnt)
 		{
 			Node temp = stack.pop();

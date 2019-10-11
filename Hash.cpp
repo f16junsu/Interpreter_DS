@@ -1,14 +1,11 @@
 #include "Hash.h"
 #include "Others.h"
-#include "Symbols.h"
-
-using namespace symbols;
 
 int HashTable::hashfunc(const std::string& input)
 {
 	int ascii_sum = 0;
 	for (char ch : input)
-		ascii_sum += ch;
+		ascii_sum += ch * ch;
 	int ind = ascii_sum % SIZE_OF_HASH_TABLE;
 	while (hashtable[ind].getSymbol() != std::string())
 	{
@@ -37,7 +34,7 @@ void HashTable::printTable(void)
 		if ((temp = hashtable[i].getSymbol()) != std::string())
 		{
 			std::cout << "|" << std::setw(11) << (-i) << " |" << std::setw(11) << temp;
-			if (hashtable[i].getValue_index() == INT_MAX) std::cout << " | UNDEFINED |" << std::endl;
+			if (hashtable[i].getValue_index() == UNDEFINED) std::cout << " | UNDEFINED |" << std::endl;
 			else std::cout << " |" << std::setw(10) << hashtable[i].getValue_index() << " |" << std::endl;
 		}
 	}
@@ -46,8 +43,6 @@ void HashTable::printTable(void)
 
 void HashTable::tableinit(void)
 {
-	for (int i = 1; i < SIZE_OF_HASH_TABLE; ++i)
-		hashtable[i].setValue_index(INT_MAX);
 	hashinsert("("); hashtable[-LEFT_PAREN].setValue_index(LEFT_PAREN);
 	hashinsert(")"); hashtable[-RIGHT_PAREN].setValue_index(RIGHT_PAREN);
 	hashinsert("define"); hashtable[-DEFINE].setValue_index(DEFINE);
@@ -67,5 +62,5 @@ void HashTable::tableinit(void)
 	hashinsert("lambda"); hashtable[-LAMBDA].setValue_index(LAMBDA);
 	hashinsert("else"); hashtable[-ELSE].setValue_index(ELSE);
 	hashtable[0].setSymbol("NIL");
-	hashtable[0].setValue_index(0);
+	hashtable[0].setValue_index(NIL);
 }

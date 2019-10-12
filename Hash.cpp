@@ -3,6 +3,8 @@
 
 int HashTable::hashfunc(const std::string& input)
 {
+	for (int i = 1; i < -NUMBER_OF_SYMBOLS; ++i)
+		if (hashtable[i].getSymbol() == input) return -i;
 	int ascii_sum = 0;
 	for (char ch : input)
 		ascii_sum += ch * ch;
@@ -11,7 +13,7 @@ int HashTable::hashfunc(const std::string& input)
 	{
 		if (hashtable[ind].getSymbol() == input) break;
 		else ++ind;
-		if (ind == SIZE_OF_HASH_TABLE) ind = 1;
+		if (ind == SIZE_OF_HASH_TABLE) ind = -NUMBER_OF_SYMBOLS;
 	}
 	return -ind;
 }
@@ -43,24 +45,23 @@ void HashTable::printTable(void)
 
 void HashTable::tableinit(void)
 {
-	hashinsert("("); hashtable[-LEFT_PAREN].setValue_index(LEFT_PAREN);
-	hashinsert(")"); hashtable[-RIGHT_PAREN].setValue_index(RIGHT_PAREN);
-	hashinsert("define"); hashtable[-DEFINE].setValue_index(DEFINE);
-	hashinsert("quote"); hashtable[-QUOTE].setValue_index(QUOTE);
-	hashinsert("+"); hashtable[-PLUS].setValue_index(PLUS);
-	hashinsert("-"); hashtable[-MINUS].setValue_index(MINUS);
-	hashinsert("*"); hashtable[-TIMES].setValue_index(TIMES);
-	hashinsert("number?"); hashtable[-isNUMBER].setValue_index(isNUMBER);
-	hashinsert("symbol?"); hashtable[-isSYMBOL].setValue_index(isSYMBOL);
-	hashinsert("null?"); hashtable[-isNULL].setValue_index(isNULL);
-	hashinsert("cons"); hashtable[-CONS].setValue_index(CONS);
-	hashinsert("cond"); hashtable[-COND].setValue_index(COND);
-	hashinsert("car"); hashtable[-CAR].setValue_index(CAR);
-	hashinsert("cdr"); hashtable[-CDR].setValue_index(CDR);
-	hashinsert("#t"); hashtable[-TRUE].setValue_index(TRUE);
-	hashinsert("#f"); hashtable[-FALSE].setValue_index(FALSE);
-	hashinsert("lambda"); hashtable[-LAMBDA].setValue_index(LAMBDA);
-	hashinsert("else"); hashtable[-ELSE].setValue_index(ELSE);
-	hashtable[0].setSymbol("NIL");
-	hashtable[0].setValue_index(NIL);
+	hashtable[-NIL].setNode("NIL", NIL);
+	hashtable[-LEFT_PAREN].setNode("(", LEFT_PAREN);
+	hashtable[-RIGHT_PAREN].setNode(")", RIGHT_PAREN);
+	hashtable[-TRUE].setNode("#t", TRUE);
+	hashtable[-FALSE].setNode("#f", FALSE);
+	hashtable[-PLUS].setNode("+", PLUS);
+	hashtable[-MINUS].setNode("-", MINUS);
+	hashtable[-TIMES].setNode("*", TIMES);
+	hashtable[-isNUMBER].setNode("number?", isNUMBER);
+	hashtable[-isSYMBOL].setNode("symbol?", isSYMBOL);
+	hashtable[-isNULL].setNode("null?", isNULL);
+	hashtable[-CONS].setNode("cons", CONS);
+	hashtable[-COND].setNode("cond", COND);
+	hashtable[-ELSE].setNode("else", ELSE);
+	hashtable[-CAR].setNode("car", CAR);
+	hashtable[-CDR].setNode("cdr", CDR);
+	hashtable[-DEFINE].setNode("define", DEFINE);
+	hashtable[-QUOTE].setNode("quote", QUOTE);
+	hashtable[-LAMBDA].setNode("lambda", LAMBDA);
 }

@@ -21,6 +21,7 @@ void run(Buffer& buf, HashTable& hashtable, MemoryTable& memorytable)
 		int result;
 		try { result = memorytable.eval(); memorytable.printEval(result); }
 		catch (std::exception & e) { std::cout << e.what() << std::endl; }
+		materials::hashtable.printTable();
 	}
 }
 

@@ -2,27 +2,8 @@
 
 bool isPredefined(int check)
 {
-	if (check == NIL) return true;
-	if (check == LEFT_PAREN) return true;
-	if (check == RIGHT_PAREN) return true;
-	if (check == DEFINE) return true;
-	if (check == QUOTE) return true;
-	if (check == PLUS) return true;
-	if (check == MINUS) return true;
-	if (check == TIMES) return true;
-	if (check == isNUMBER) return true;
-	if (check == isSYMBOL) return true;
-	if (check == isNULL) return true;
-	if (check == CONS) return true;
-	if (check == COND) return true;
-	if (check == CAR) return true;
-	if (check == CDR) return true;
-	if (check == TRUE) return true;
-	if (check == FALSE) return true;
-	if (check == LAMBDA) return true;
-	if (check == ELSE) return true;
-	if (check == UNDEFINED) return true;
-	return false;
+	if (check > NUMBER_OF_SYMBOLS) return true;
+	else return false;
 }
 
 bool isFloat(const std::string& input)

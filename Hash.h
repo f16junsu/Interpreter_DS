@@ -4,9 +4,7 @@
 #include <iomanip>
 #include "Symbols.h"
 
-using namespace symbols;
-
-#define SIZE_OF_MEMORY_TABLE 1000
+#define SIZE_OF_MEMORY_TABLE 100
 #define SIZE_OF_HASH_TABLE 1031
 class HashNode
 {
@@ -18,8 +16,9 @@ public:
 	HashNode() { this->symbol = std::string(), this->value_index = UNDEFINED; }
 	std::string getSymbol(void) { return this->symbol; }
 	int getValue_index(void) { return this->value_index; }
-	void setSymbol(std::string val) { this->symbol = val; }
+	void setSymbol(std::string sym) { this->symbol = sym; }
 	void setValue_index(int val) { this->value_index = val; }
+	void setNode(std::string sym, int val) { setSymbol(sym), setValue_index(val); }
 };
 
 class HashTable
